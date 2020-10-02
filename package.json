@@ -4,6 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node ./server/server.js"
+    "start": "node ./server/server.js",
+    "install:frontend": "cd frontend; npm install",
+    "install:server": "cd server; npm install",
+    "postinstall": "yarn install:frontend; yarn install:server"
   }
 }
