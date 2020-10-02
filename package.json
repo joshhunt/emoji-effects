@@ -7,6 +7,7 @@
     "start": "node ./server/server.js",
     "install:frontend": "cd frontend; npm install",
     "install:server": "cd server; npm install",
+    "build": "cd frontend; yarn build",
     "postinstall": "yarn install:frontend; yarn install:server"
   }
 }

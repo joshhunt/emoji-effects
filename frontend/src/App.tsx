@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import Particles from "react-tsparticles";
 import produce from "immer";
+import { useLocation } from "react-use";
 import { Container } from "tsparticles/dist/Core/Container";
 
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -12,14 +13,6 @@ import { IOptions } from "tsparticles/dist/Options/Interfaces/IOptions";
 import io from "socket.io-client";
 
 type ParticlesConfig = RecursivePartial<IOptions>;
-
-const socket = io("http://localhost:4000");
-
-socket.on("connect", function () {});
-socket.on("event", function (data: unknown) {
-  console.log(data);
-});
-socket.on("disconnect", function () {});
 
 const makeParticleConfig = (emoji: string, rotate: boolean) =>
   produce(particlesOptions, (draftParticles: any) => {
@@ -54,16 +47,26 @@ interface SendEvent {
 }
 
 function App() {
-  const particleRef = React.useRef<Container>();
+  const rLocation = useLocation();
   const [metaConfigs, setMetaConfigs] = React.useState<MetaConfig[]>([]);
   const [bigEmojiConfigs, setBigEmojiConfigs] = React.useState<MetaConfig[]>(
     []
   );
 
+  const room = (rLocation.pathname || "").slice(1);
+
+  console.log({ room });
+
   useEffect(() => {
-    setTimeout(() => {
-      console.log("particleRef: ", particleRef.current?.plugins);
-    }, 100);
+    if (!room) {
+      return;
+    }
+
+    const socket = io("/");
+
+    socket.on("connect", function () {
+      socket.emit("join", { room });
+    });
 
     socket.on("emoji", (data: SendEvent) => {
       const { emoji, rotate, wave } = data;
@@ -97,7 +100,7 @@ function App() {
         setBigEmojiConfigs((v: any) => v.filter((vv: any) => vv.id !== id));
       }, TIMEOUT / 2);
     });
-  }, []);
+  }, [room]);
 
   const lastBigEmoji =
     bigEmojiConfigs.length > 0 && bigEmojiConfigs[bigEmojiConfigs.length - 1];
