@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "cacheDirectories": ["frontend/node_modules", "server/node_modules"]
   "scripts": {
     "start": "node ./server/server.js",
     "install:frontend": "cd frontend; npm install",
